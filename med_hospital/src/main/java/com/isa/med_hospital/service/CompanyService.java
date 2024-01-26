@@ -8,5 +8,6 @@ import java.util.List;
 @Service
 public interface CompanyService {
 
+    CompanyDto findById(Long id);
     List<CompanyDto> findAll();
 }

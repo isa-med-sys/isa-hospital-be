@@ -8,5 +8,6 @@ import java.util.List;
 @Repository
 public interface CompanyRepository {
 
+    CompanyDto findById(Long id);
     List<CompanyDto> findAll();
 }
