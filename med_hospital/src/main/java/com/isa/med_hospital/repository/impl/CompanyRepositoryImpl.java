@@ -26,7 +26,6 @@ public class CompanyRepositoryImpl implements CompanyRepository {
 
         List<Object[]> resultList = entityManager.createNativeQuery(sql).getResultList();
 
-        // Map the raw results to your DTOs
         Map<Long, CompanyDto> companyDtoMap = new HashMap<>();
 
         for (Object[] row : resultList) {

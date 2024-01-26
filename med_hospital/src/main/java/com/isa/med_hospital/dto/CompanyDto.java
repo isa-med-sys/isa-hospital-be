@@ -12,8 +12,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CompanyDto {
+
     private Long id;
     private String name;
     private List<EquipmentDto> equipment;
 }
-

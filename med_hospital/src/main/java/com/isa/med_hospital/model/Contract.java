@@ -39,7 +39,7 @@ public class Contract {
     private Boolean isActive;
 
     public void deactivate() {
-        if (isActive) {
+        if (!isActive) {
             throw new IllegalStateException("Contract is already inactive.");
         }
 

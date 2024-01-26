@@ -4,10 +4,11 @@ import com.isa.med_hospital.dto.ContractDto;
 import com.isa.med_hospital.service.ContractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.List;
+
+@RestController
 @CrossOrigin(origins = "http://localhost:4201")
 @RequestMapping("/api/contracts")
 public class ContractController {
@@ -20,8 +21,14 @@ public class ContractController {
     }
 
     @GetMapping
-    public ResponseEntity<ContractDto> findContractByUser(@RequestParam Long userId) {
-        ContractDto result = contractService.findByUser(userId);
+    public ResponseEntity<List<ContractDto>> findAllContractsByUser(@RequestParam Long userId) {
+        List<ContractDto> result = contractService.findAllByUser(userId);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/active")
+    public ResponseEntity<ContractDto> findActiveContractByUser(@RequestParam Long userId) {
+        ContractDto result = contractService.findActiveByUser(userId);
         return ResponseEntity.ok(result);
     }
 

@@ -8,8 +8,12 @@ import com.isa.med_hospital.util.Mapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
+@Transactional
 public class ContractServiceImpl implements ContractService {
 
     private final ContractRepository contractRepository;
@@ -21,26 +25,50 @@ public class ContractServiceImpl implements ContractService {
         this.mapper = mapper;
     }
 
+    @Override
+    public List<ContractDto> findAllByUser(Long userId) {
+        List<Contract> contract = contractRepository.findByUserId(userId);
+        return contract == null
+                ? null
+                : mapper.mapList(contract, ContractDto.class);
+    }
 
     @Override
-    public ContractDto findByUser(Long userId) {
+    public ContractDto findActiveByUser(Long userId) {
         Contract contract = contractRepository.findByUserIdAndIsActiveTrue(userId);
-        return mapper.map(contract, ContractDto.class);
+        return contract == null
+                ? null
+                : mapper.map(contract, ContractDto.class);
     }
 
     @Override
     public ContractDto create(ContractDto contractDto) {
         validateContract(contractDto);
         Contract contract = mapper.map(contractDto, Contract.class);
-        // TODO deactivate all existing contracts
+
+        Long userId = contractDto.getUserId();
+        deactivateExistingContract(userId);
+
         contract = contractRepository.save(contract);
         return mapper.map(contract, ContractDto.class);
     }
 
     @Override
     public ContractDto update(Long contractId, ContractDto contractDto) {
-        // TODO
-        return null;
+        validateContract(contractDto);
+
+        Contract existingContract = contractRepository.findById(contractId)
+                    .orElseThrow(() -> new EntityNotFoundException("Contract not found."));
+
+        if(!existingContract.getIsActive()) {
+            throw new IllegalStateException("Contract not active.");
+        }
+
+        existingContract.setStartDate(contractDto.getStartDate());
+        existingContract.setEquipmentQuantities(contractDto.getEquipmentQuantities());
+
+        existingContract = contractRepository.save(existingContract);
+        return mapper.map(existingContract, ContractDto.class);
     }
 
     @Override
@@ -59,5 +87,13 @@ public class ContractServiceImpl implements ContractService {
         if (contractDto.getEquipmentQuantities().values().stream().anyMatch(quantity -> quantity <= 0)) {
             throw new IllegalArgumentException("Equipment quantities must be greater than 0");
         }
+    }
+
+    private void deactivateExistingContract(Long userId) {
+        Contract existingContract = contractRepository.findByUserIdAndIsActiveTrue(userId);
+        if(existingContract == null) return;
+
+        existingContract.deactivate();
+        contractRepository.save(existingContract);
     }
 }
