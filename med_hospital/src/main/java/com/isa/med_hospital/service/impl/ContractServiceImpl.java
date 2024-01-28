@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -44,7 +46,8 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public ContractDto create(ContractDto contractDto) {
         validateContract(contractDto);
-        Contract contract = mapper.map(contractDto, Contract.class);
+
+        Contract contract = createContract(contractDto);
 
         Long userId = contractDto.getUserId();
         deactivateExistingContract(userId);
@@ -64,6 +67,9 @@ public class ContractServiceImpl implements ContractService {
             throw new IllegalStateException("Contract not active.");
         }
 
+        if(!Objects.equals(existingContract.getCompanyId(), contractDto.getCompanyId())) {
+            return create(contractDto);
+        }
         existingContract.setStartDate(contractDto.getStartDate());
         existingContract.setEquipmentQuantities(contractDto.getEquipmentQuantities());
 
@@ -82,11 +88,26 @@ public class ContractServiceImpl implements ContractService {
     private void validateContract(ContractDto contractDto) {
         if (contractDto.getId() == null || contractDto.getUserId() == null || contractDto.getCompanyId() == null ||
                 contractDto.getStartDate() == null || contractDto.getEquipmentQuantities() == null || contractDto.getIsActive() == null) {
-            throw new IllegalArgumentException("Some fields of contract are null");
+            throw new IllegalArgumentException("Some fields of the contract are null");
         }
+
         if (contractDto.getEquipmentQuantities().values().stream().anyMatch(quantity -> quantity <= 0)) {
             throw new IllegalArgumentException("Equipment quantities must be greater than 0");
         }
+
+        if (contractDto.getStartDate().isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Start Date can't be in the past");
+        }
+    }
+
+    private Contract createContract(ContractDto contractDto) {
+        Contract contract = new Contract();
+        contract.setUserId(contractDto.getUserId());
+        contract.setCompanyId(contractDto.getCompanyId());
+        contract.setStartDate(contractDto.getStartDate());
+        contract.setEquipmentQuantities(contractDto.getEquipmentQuantities());
+        contract.setIsActive(true);
+        return contract;
     }
 
     private void deactivateExistingContract(Long userId) {
