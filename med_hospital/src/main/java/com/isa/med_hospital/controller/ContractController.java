@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @CrossOrigin(origins = "http://localhost:4201")
 @RequestMapping("/api/contracts")
@@ -20,28 +18,22 @@ public class ContractController {
         this.contractService = contractService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ContractDto>> findAllContractsByUser(@RequestParam Long userId) {
-        List<ContractDto> result = contractService.findAllByUser(userId);
-        return ResponseEntity.ok(result);
-    }
-
     @GetMapping("/active")
-    public ResponseEntity<ContractDto> findActiveContractByUser(@RequestParam Long userId) {
-        ContractDto result = contractService.findActiveByUser(userId);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<Void> findActiveContractByUser(@RequestParam Long userId) {
+        contractService.findActiveByUser(userId);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping
-    public ResponseEntity<ContractDto> createContract(@RequestBody ContractDto contractDto) {
-        ContractDto result = contractService.create(contractDto);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<Void> createContract(@RequestBody ContractDto contractDto) {
+        contractService.create(contractDto);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ContractDto> updateContract(@PathVariable Long id, @RequestBody ContractDto contractDto) {
-        ContractDto result = contractService.update(id, contractDto);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<Void> updateContract(@PathVariable Long id, @RequestBody ContractDto contractDto) {
+        contractService.update(id, contractDto);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")

@@ -14,28 +14,49 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    @Value("${rabbitmq.equip-producer.queue.name}")
-    private String queue;
+    @Value("${rabbitmq.equip-producer.handle.queue.name}")
+    private String queue1;
+    @Value("${rabbitmq.equip-producer.handle.exchange.name}")
+    private String exchange1;
+    @Value("${rabbitmq.equip-producer.handle.routing.key.name}")
+    private String routingKey1;
 
-    @Value("${rabbitmq.equip-producer.exchange.name}")
-    private String exchange;
+    @Value("${rabbitmq.equip-producer.get.queue.name}")
+    private String queue2;
+    @Value("${rabbitmq.equip-producer.get.exchange.name}")
+    private String exchange2;
+    @Value("${rabbitmq.equip-producer.get.routing.key.name}")
+    private String routingKey2;
 
-    @Value("${rabbitmq.equip-producer.routing.key.name}")
-    private String routingKey;
 
     @Bean
-    public Queue equipQueue(){
-        return new Queue(queue);
+    public Queue queue1(){
+        return new Queue(queue1);
     }
 
     @Bean
-    public TopicExchange exchange(){
-        return new TopicExchange(exchange);
+    public TopicExchange exchange1(){
+        return new TopicExchange(exchange1);
     }
 
     @Bean
-    public Binding binding(){
-        return BindingBuilder.bind(equipQueue()).to(exchange()).with(routingKey);
+    public Binding binding1(){
+        return BindingBuilder.bind(queue1()).to(exchange1()).with(routingKey1);
+    }
+
+    @Bean
+    public Queue queue2(){
+        return new Queue(queue2);
+    }
+
+    @Bean
+    public TopicExchange exchange2(){
+        return new TopicExchange(exchange2);
+    }
+
+    @Bean
+    public Binding binding2(){
+        return BindingBuilder.bind(queue2()).to(exchange2()).with(routingKey2);
     }
 
     @Bean
