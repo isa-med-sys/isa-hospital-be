@@ -1,7 +1,7 @@
-# Medical Equipment Contracts
+# Medical Hospital
 
 ## Description
-Welcome to our specialized application designed exclusively for hospitals, streamlining the process of equipment procurement through convenient monthly contracts. This exterior app serves as a seamless bridge, facilitating efficient communication with the main backend system via message queue. 
+This is a specialized application designed exclusively for hospitals, streamlining the process of equipment procurement through convenient monthly contracts. This exterior app serves as a seamless bridge, facilitating efficient communication with the main backend system via message queue. 
 
 This application is tailored to meet the unique needs of hospitals seeking a hassle-free solution for ordering essential equipment on a monthly basis.
 
